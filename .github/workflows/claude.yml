@@ -23,7 +23,7 @@ jobs:
       pull-requests: read
       issues: read
       id-token: write
-      actions: read # Required for Claude to read CI results on PRs
+      actions: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,12 +40,10 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-
           custom_instructions: |
             The project is already setup with all dependencies installed.
             The server is already running at localhost:3000. Logs from it are beign written to logs.txt. If needed, you can query the db with the 'sqlite3' cli. If needed, use the mcp_playwright set of tools to launh the browser and interact with the app.
-
-mcp_config: |
+          mcp_config: |
             {
               "mcpServers": {
                 "playwright": {
@@ -58,18 +56,6 @@ mcp_config: |
                 }
               }
             }
-
-          allowed_tools: "Bash(npm:*),Bash(sqlite3:*),mcp__playwright__browser_snapshot,mcp__playwright__browser_click,..."
-
-          # This is an optional setting that allows Claude to read CI results on PRs
+          allowed_tools: 'Bash(npm:*),Bash(sqlite3:*),mcp__playwright__browser_snapshot,mcp__playwright__browser_click,...'
           additional_permissions: |
             actions: read
-
-          # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
-          # prompt: 'Update the pull request description to include a summary of changes.'
-
-          # Optional: Add claude_args to customize behavior and configuration
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
-          # claude_args: '--allowed-tools Bash(gh pr:*)'
-
